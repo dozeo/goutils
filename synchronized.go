@@ -29,15 +29,15 @@ outer:
 
 func Unlock(key string) {
 	removed := false
+	globalHashLock.Lock()
 	for e := locks.Front(); e != nil; e = e.Next() {
 		if e.Value == key {
-			globalHashLock.Lock()
 			locks.Remove(e)
-			globalHashLock.Unlock()
 			removed = true
 			break
 		}
 	}
+	globalHashLock.Unlock()
 	if removed == false {
 		panic("unlock of unlocked syncronized")
 	}
