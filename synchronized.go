@@ -42,3 +42,9 @@ func Unlock(key interface{}) {
 		panic("unlock of unlocked syncronized")
 	}
 }
+
+func Synchronized(lock interface{}, call func()) {
+	Lock(lock)
+	defer Unlock(lock)
+	call()
+}

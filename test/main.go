@@ -12,6 +12,10 @@ func a(v int) {
 		synchronized.Lock("a")
 		synchronized.Unlock("a")
 	}
+	for b := 0; b < 10000; b++ {
+		synchronized.Synchronized("lockname", func() {
+		})
+	}
 	k--
 }
 
