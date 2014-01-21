@@ -9,7 +9,7 @@ import (
 var globalHashLock sync.Mutex
 var locks list.List
 
-func Lock(key string) {
+func Lock(key interface{}) {
 	wait := true
 outer:
 	for wait {
@@ -27,7 +27,7 @@ outer:
 	globalHashLock.Unlock()
 }
 
-func Unlock(key string) {
+func Unlock(key interface{}) {
 	removed := false
 	globalHashLock.Lock()
 	for e := locks.Front(); e != nil; e = e.Next() {
