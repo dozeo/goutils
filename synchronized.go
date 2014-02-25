@@ -1,50 +1,55 @@
-package synchronized
+package goutils
 
 import (
 	"container/list"
+	"strconv"
 	"sync"
 	"time"
 )
 
-var globalHashLock sync.Mutex
-var locks list.List
+var Sync Synchronized
 
-func Lock(key interface{}) {
+type Synchronized struct {
+	globalHashLock sync.Mutex
+	locks          list.List
+}
+
+func (s *Synchronized) Lock(key interface{}) {
 	wait := true
 outer:
 	for wait {
-		globalHashLock.Lock()
-		for e := locks.Front(); e != nil; e = e.Next() {
+		s.globalHashLock.Lock()
+		for e := s.locks.Front(); e != nil; e = e.Next() {
 			if e.Value == key {
-				globalHashLock.Unlock()
+				s.globalHashLock.Unlock()
 				time.Sleep(1 * time.Millisecond)
 				continue outer
 			}
 		}
 		wait = false
 	}
-	locks.PushFront(key)
-	globalHashLock.Unlock()
+	s.locks.PushFront(key)
+	s.globalHashLock.Unlock()
 }
 
-func Unlock(key interface{}) {
+func (s *Synchronized) Unlock(key interface{}) {
 	removed := false
-	globalHashLock.Lock()
-	for e := locks.Front(); e != nil; e = e.Next() {
+	s.globalHashLock.Lock()
+	for e := s.locks.Front(); e != nil; e = e.Next() {
 		if e.Value == key {
-			locks.Remove(e)
+			s.locks.Remove(e)
 			removed = true
 			break
 		}
 	}
-	globalHashLock.Unlock()
+	s.globalHashLock.Unlock()
 	if removed == false {
-		panic("unlock of unlocked syncronized")
+		panic("unlock of unlocked syncronized. known locks: " + strconv.Itoa(s.locks.Len()))
 	}
 }
 
-func Synchronized(lock interface{}, call func()) {
-	Lock(lock)
-	defer Unlock(lock)
+func (s *Synchronized) Call(lock interface{}, call func()) {
+	s.Lock(lock)
+	defer s.Unlock(lock)
 	call()
 }
