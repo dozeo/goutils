@@ -1,7 +1,7 @@
 package main
 
 import (
-	. "github.com/dozeo/go-helpers"
+	. "github.com/dozeo/goutils"
 	"runtime"
 	"time"
 )
