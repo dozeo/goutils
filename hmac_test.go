@@ -4,6 +4,7 @@ import (
 	"fmt"
 	. "github.com/smartystreets/goconvey/convey"
 	"os/exec"
+	"strconv"
 	"testing"
 )
 
@@ -15,72 +16,88 @@ func MyConvey(items ...interface{}) {
 }
 
 func Test_HMAC(t *testing.T) {
+	MyConvey("URL 0", t, func() {
+		url := "http://www.eklenet.de"
+		pass := "geheim"
+		ttl := -1
+		out, err := exec.Command("php5", "hmac_test/ref.php", url, pass, strconv.Itoa(ttl)).Output()
+		So(nil, ShouldEqual, err)
+		So(HMAC.SignUrl(url, pass, ttl), ShouldEqual, string(out))
+		So(false, ShouldEqual, HMAC.Validate(string(out), pass))
+	})
 	MyConvey("URL 1", t, func() {
 		url := "http://www.eklenet.de"
 		pass := "geheim"
-		out, err := exec.Command("php5", "hmac_test/ref.php", url, pass).Output()
+		ttl := 30
+		out, err := exec.Command("php5", "hmac_test/ref.php", url, pass, strconv.Itoa(ttl)).Output()
 		So(nil, ShouldEqual, err)
-		So(signUrl(url, pass), ShouldEqual, string(out))
-		So(true, ShouldEqual, validate(string(out), pass))
+		So(HMAC.SignUrl(url, pass, ttl), ShouldEqual, string(out))
+		So(true, ShouldEqual, HMAC.Validate(string(out), pass))
 	})
 	MyConvey("URL 2", t, func() {
 		url := "http://www.eklenet.de/"
 		pass := "geheim"
-		out, err := exec.Command("php5", "hmac_test/ref.php", url, pass).Output()
+		ttl := 30
+		out, err := exec.Command("php5", "hmac_test/ref.php", url, pass, strconv.Itoa(ttl)).Output()
 		So(nil, ShouldEqual, err)
-		So(signUrl(url, pass), ShouldEqual, string(out))
-		So(true, ShouldEqual, validate(string(out), pass))
+		So(HMAC.SignUrl(url, pass, ttl), ShouldEqual, string(out))
+		So(true, ShouldEqual, HMAC.Validate(string(out), pass))
 	})
 	MyConvey("URL 3", t, func() {
 		url := "http://www.eklenet.de/abc"
 		pass := "geheim"
-		out, err := exec.Command("php5", "hmac_test/ref.php", url, pass).Output()
+		ttl := 30
+		out, err := exec.Command("php5", "hmac_test/ref.php", url, pass, strconv.Itoa(ttl)).Output()
 		So(nil, ShouldEqual, err)
-		So(signUrl(url, pass), ShouldEqual, string(out))
-		So(true, ShouldEqual, validate(string(out), pass))
+		So(HMAC.SignUrl(url, pass, ttl), ShouldEqual, string(out))
+		So(true, ShouldEqual, HMAC.Validate(string(out), pass))
 	})
 	MyConvey("URL 4", t, func() {
 		url := "http://www.eklenet.de/abc/"
 		pass := "geheim"
-		out, err := exec.Command("php5", "hmac_test/ref.php", url, pass).Output()
+		ttl := 30
+		out, err := exec.Command("php5", "hmac_test/ref.php", url, pass, strconv.Itoa(ttl)).Output()
 		So(nil, ShouldEqual, err)
-		So(signUrl(url, pass), ShouldEqual, string(out))
-		So(true, ShouldEqual, validate(string(out), pass))
+		So(HMAC.SignUrl(url, pass, 30), ShouldEqual, string(out))
+		So(true, ShouldEqual, HMAC.Validate(string(out), pass))
 	})
 	MyConvey("URL 5", t, func() {
 		url := "http://www.eklenet.de/abc/def?xyz=123&ok=no"
 		pass := "geheim"
-		out, err := exec.Command("php5", "hmac_test/ref.php", url, pass).Output()
+		ttl := 30
+		out, err := exec.Command("php5", "hmac_test/ref.php", url, pass, strconv.Itoa(ttl)).Output()
 		So(nil, ShouldEqual, err)
-		So(signUrl(url, pass), ShouldEqual, string(out))
-		So(true, ShouldEqual, validate(string(out), pass))
+		So(HMAC.SignUrl(url, pass, 30), ShouldEqual, string(out))
+		So(true, ShouldEqual, HMAC.Validate(string(out), pass))
 	})
 	MyConvey("URL 6", t, func() {
 		url := "http://www.eklenet.de/abc/def?ok=no&xyz=123"
 		pass := "geheim"
-		out, err := exec.Command("php5", "hmac_test/ref.php", url, pass).Output()
+		ttl := 30
+		out, err := exec.Command("php5", "hmac_test/ref.php", url, pass, strconv.Itoa(ttl)).Output()
 		So(nil, ShouldEqual, err)
-		So(signUrl(url, pass), ShouldEqual, string(out))
-		So(true, ShouldEqual, validate(string(out), pass))
+		So(HMAC.SignUrl(url, pass, ttl), ShouldEqual, string(out))
+		So(true, ShouldEqual, HMAC.Validate(string(out), pass))
 	})
 	MyConvey("URL 7", t, func() {
 		url := "http://www.eklenet.de/abc/def?ok=no&xyz=123#what"
 		pass := "geheim"
-		out, err := exec.Command("php5", "hmac_test/ref.php", url, pass).Output()
+		ttl := 30
+		out, err := exec.Command("php5", "hmac_test/ref.php", url, pass, strconv.Itoa(ttl)).Output()
 		So(nil, ShouldEqual, err)
-		So(signUrl(url, pass), ShouldEqual, string(out))
-		So(true, ShouldEqual, validate(string(out), pass))
+		So(HMAC.SignUrl(url, pass, ttl), ShouldEqual, string(out))
+		So(true, ShouldEqual, HMAC.Validate(string(out), pass))
 	})
 	MyConvey("URL 8", t, func() {
 		url := "http://www.eklenet.de/abc/def?ok=no&xyz=123#what"
 		pass := "geheim"
-		surl := signUrl(url, pass)
-		So(true, ShouldEqual, validate(surl, pass))
+		surl := HMAC.SignUrl(url, pass,30)
+		So(true, ShouldEqual, HMAC.Validate(surl, pass))
 	})
 	MyConvey("URL 9", t, func() {
 		url := "http://www.eklenet.de/abc/def?ok=no&xyz=123#what"
 		pass := "geheim"
-		surl := signUrl(url, pass)
-		So(true, ShouldNotEqual, validate("_"+surl, pass))
+		surl := HMAC.SignUrl(url, pass,30)
+		So(true, ShouldNotEqual, HMAC.Validate("_"+surl, pass))
 	})
 }
