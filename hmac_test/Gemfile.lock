@@ -1,0 +1,18 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    addressable (2.2.8)
+    rack (1.5.2)
+    warden (1.2.3)
+      rack (>= 1.0)
+    warden-hmac-authentication (0.6.2)
+      addressable
+      rack
+      warden
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  addressable (~> 2.2.8)
+  warden-hmac-authentication (= 0.6.2)

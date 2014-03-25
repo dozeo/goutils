@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"net/url"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
 
 const (
-	DATE   = "auth%5Bdate%5D="
-	SIG    = "&auth%5Bsignature%5D="
+	DATE   = "auth[date]="
+	SIG    = "&auth[signature]="
 	FORMAT = "Mon, 02 Jan 2006 15:04:05 GMT"
 )
 
@@ -29,73 +30,77 @@ func (h *Hmac) signRequest(urlp string, secret string, t time.Time) string {
 	parms["date"] = t.Format(FORMAT)
 	//parms["nonce"] = ""
 	parms["path"] = u.Path
-	r := h.canonicalRepresentation(parms, q)
+	r, get := h.canonicalRepresentation(parms, q)
 	mac := hmac.New(sha1.New, []byte(secret))
 	mac.Write([]byte(r))
 	expectedMAC := mac.Sum(nil)
 	date := strings.Replace(url.QueryEscape(parms["date"]), "+", "%20", -1)
 	x := ""
-	if len(q) > 0 {
+	if len(get) > 0 {
 		x = "&"
 	}
 	f := ""
 	if len(u.Fragment) > 0 {
 		f = "#" + u.Fragment
 	}
-	return fmt.Sprintf("%s://%s%s?%s%s%s%s%s%x%s", u.Scheme, u.Host, u.Path, u.RawQuery, x, DATE, date, SIG, expectedMAC, f)
+	return fmt.Sprintf("%s://%s%s?%s%s%s%x%s%s%s", u.Scheme, u.Host, u.Path, DATE, date, SIG, expectedMAC, x, get, f)
 }
 
 func (h *Hmac) Validate(urlp string, secret string) bool {
-	u, _ := url.Parse(urlp)
+	t, _ := h.ValidateTime(urlp, secret)
+	return t
+}
+
+func (h *Hmac) ValidateTime(urlp string, secret string) (bool, int) {
 	p := strings.LastIndex(urlp, DATE)
 	if p < 0 {
-		return false
+		return false, 0
 	}
 	s := strings.LastIndex(urlp, SIG)
+	if s < 0 {
+		return false, 0
+	}
 	times := urlp[p+len(DATE) : s]
 	tt, err := url.QueryUnescape(times)
 	if err != nil {
-		return false
-	}
-	var baseurl string
-	if urlp[p-1] == '&' {
-		baseurl = urlp[:p-1]
-	} else {
-		baseurl = urlp[:p]
+		return false, 0
 	}
 	t, terr := time.Parse(FORMAT, tt)
 	if terr != nil {
-		return false
+		return false, 0
 	}
 	if t.Unix() < time.Now().UTC().Unix() {
-		return false
+		return false, 0
 	}
-	f := ""
-	if len(u.Fragment) > 0 {
-		f = "#" + u.Fragment
-	}
-	newu := h.signRequest(baseurl+f, secret, t)
+	newu := h.signRequest(urlp, secret, t)
 	if urlp == newu {
-		return true
+		ts, _ := strconv.Atoi(t.Format(time.RFC850))
+		return true, ts
 	} else {
-		fmt.Printf("\n%s\n%s\n", urlp, newu)
-		return false
+		return false, 0
 	}
 }
 
 func (h *Hmac) SignUrl(url string, secret string, ttl int) string {
-	t := time.Now().UTC()
-	t = t.Add(time.Second * time.Duration(ttl))
+	var t time.Time
+	//       1395756739
+	if ttl > 1000000000 {
+		t = time.Unix(int64(ttl), 0)
+	} else {
+		t = time.Now().UTC()
+		t = t.Add(time.Second * time.Duration(ttl))
+	}
 	return h.signRequest(url, secret, t)
 }
 
-func (h *Hmac) canonicalRepresentation(parms map[string]string, query map[string][]string) string {
+func (h *Hmac) canonicalRepresentation(parms map[string]string, query map[string][]string) (string, string) {
 	var rep string
 	rep += strings.ToUpper(parms["method"]) + "\n"
 	delete(parms, "method")
 	rep += "date:" + parms["date"] + "\n"
 	rep += "nonce:" + parms["nonce"] + "\n"
 	rep += parms["path"]
+	get := ""
 	if query != nil && len(query) > 0 {
 		mk := make([]string, len(query))
 		var i uint32
@@ -105,18 +110,28 @@ func (h *Hmac) canonicalRepresentation(parms map[string]string, query map[string
 			i++
 		}
 		sort.Strings(mk)
-		rep += "?"
 		first := true
 		for _, key := range mk {
+			if key == "auth[date]" {
+				continue
+			}
+			if key == "auth[signature]" {
+				continue
+			}
 			if first {
 				first = false
+				rep += "?"
 			} else {
 				rep += "&"
+				get += "&"
 			}
 			rep += key
 			rep += "="
 			rep += query[key][0]
+			get += key
+			get += "="
+			get += query[key][0]
 		}
 	}
-	return rep
+	return rep, get
 }

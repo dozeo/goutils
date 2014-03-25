@@ -1,21 +1,13 @@
 package goutils
 
 import (
-	"fmt"
 	. "github.com/smartystreets/goconvey/convey"
 	"os/exec"
 	"strconv"
 	"testing"
 )
 
-func MyConvey(items ...interface{}) {
-	fmt.Println("-------------------------------------------------------------------------")
-	fmt.Println("-- " + items[0].(string))
-	fmt.Println("-------------------------------------------------------------------------")
-	Convey(items...)
-}
-
-func Test_HMAC(t *testing.T) {
+func Test_HMAC_PHP(t *testing.T) {
 	MyConvey("URL 0", t, func() {
 		url := "http://www.eklenet.de"
 		pass := "geheim"

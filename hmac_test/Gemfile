@@ -1,0 +1,5 @@
+source 'https://rubygems.org'
+
+#gem "addressable", "2.2.8"
+gem 'addressable' , '~> 2.2.8'
+gem "warden-hmac-authentication", "0.6.2", :require => ['hmac/signer', 'hmac/strategies/query', 'hmac/strategies/header', 'faraday/request/hmac']
