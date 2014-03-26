@@ -83,11 +83,11 @@ func (h *Hmac) ValidateTime(urlp string, secret string) (bool, int) {
 	}
 	newu := h.signRequest(urlp, secret, t)
 	if urlp == newu {
-		fmt.Printf("SH:<%s>\n", urlp)
-		fmt.Printf("IS:<%s>\n", newu)
 		ts, _ := strconv.Atoi(t.Format(time.RFC850))
 		return true, ts
 	} else {
+		fmt.Printf("SH:<%s>\n", urlp)
+		fmt.Printf("IS:<%s>\n", newu)
 		return false, -6
 	}
 }
