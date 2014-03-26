@@ -57,8 +57,8 @@ func (h *Hmac) Validate(urlp string, secret string) bool {
 func (h *Hmac) ValidateTime(urlp string, secret string) (bool, int) {
 	p := strings.LastIndex(urlp, DATE)
 	if p < 0 {
-		urlp = strings.Replace(urlp, "%5B", "[", -1)
-		urlp = strings.Replace(urlp, "%5D", "]", -1)
+		urlp = strings.Replace(urlp, "%5B", "[", 1)
+		urlp = strings.Replace(urlp, "%5D", "]", 1)
 		p = strings.LastIndex(urlp, DATE)
 	}
 	if p < 0 {
