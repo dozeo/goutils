@@ -57,7 +57,7 @@ func (h *Hmac) Validate(urlp string, secret string) bool {
 func (h *Hmac) ValidateTime(urlp string, secret string) (bool, int) {
 	p := strings.LastIndex(urlp, DATE)
 	if p < 0 {
-		fmt.Printf("<%s> does not contain <>\n", urlp, DATE)
+		fmt.Printf("<%s> does not contain <%s>\n", urlp, DATE)
 		return false, -1
 	}
 	s := strings.LastIndex(urlp, SIG)
@@ -73,7 +73,7 @@ func (h *Hmac) ValidateTime(urlp string, secret string) (bool, int) {
 	if terr != nil {
 		return false, -4
 	}
-	if t.Unix() < time.Now().UTC().Unix() {
+	if t.Unix() <= time.Now().UTC().Unix() {
 		return false, -5
 	}
 	newu := h.signRequest(urlp, secret, t)
