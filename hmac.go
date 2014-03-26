@@ -74,7 +74,7 @@ func (h *Hmac) ValidateTime(urlp string, secret string) (bool, int) {
 		return false, -4
 	}
 	if t.Unix() <= time.Now().UTC().Unix() {
-		return false, -5
+		return false, int(t.Unix() - time.Now().UTC().Unix())
 	}
 	newu := h.signRequest(urlp, secret, t)
 	if urlp == newu {
