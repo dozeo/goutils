@@ -50,13 +50,14 @@ func (h *Hmac) signRequest(urlp string, secret string, t time.Time) string {
 
 func (h *Hmac) Validate(urlp string, secret string) bool {
 	t, s := h.ValidateTime(urlp, secret)
-	fmt.Printf("Validate: " + strconv.Itoa(s))
+	fmt.Printf("Validate: " + strconv.Itoa(s) + "\n")
 	return t
 }
 
 func (h *Hmac) ValidateTime(urlp string, secret string) (bool, int) {
 	p := strings.LastIndex(urlp, DATE)
 	if p < 0 {
+		fmt.Printf("<%s> does not contain <>\n", urlp, DATE)
 		return false, -1
 	}
 	s := strings.LastIndex(urlp, SIG)
