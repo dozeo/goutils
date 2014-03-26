@@ -31,7 +31,6 @@ func (h *Hmac) signRequest(urlp string, secret string, t time.Time) string {
 	//parms["nonce"] = ""
 	parms["path"] = u.Path
 	r, get := h.canonicalRepresentation(parms, q)
-	fmt.Printf("<%s>\n", r)
 	mac := hmac.New(sha1.New, []byte(secret))
 	mac.Write([]byte(r))
 	expectedMAC := mac.Sum(nil)
@@ -44,8 +43,11 @@ func (h *Hmac) signRequest(urlp string, secret string, t time.Time) string {
 	if len(u.Fragment) > 0 {
 		f = "#" + u.Fragment
 	}
-	m := "" //fmt.Sprintf("REP: <%s>\n",r)
-	return m + fmt.Sprintf("%s://%s%s?%s%s%s%x%s%s%s", u.Scheme, u.Host, u.Path, DATE, date, SIG, expectedMAC, x, get, f)
+	start := ""
+	if u.Scheme != "" {
+		start = u.Scheme + "://" + u.Host
+	}
+	return fmt.Sprintf("%s%s?%s%s%s%x%s%s%s", start, u.Path, DATE, date, SIG, expectedMAC, x, get, f)
 }
 
 func (h *Hmac) Validate(urlp string, secret string) bool {
@@ -56,11 +58,6 @@ func (h *Hmac) Validate(urlp string, secret string) bool {
 
 func (h *Hmac) ValidateTime(urlp string, secret string) (bool, int) {
 	p := strings.LastIndex(urlp, DATE)
-	if p < 0 {
-		urlp = strings.Replace(urlp, "%5B", "[", 2)
-		urlp = strings.Replace(urlp, "%5D", "]", 2)
-		p = strings.LastIndex(urlp, DATE)
-	}
 	if p < 0 {
 		fmt.Printf("<%s> does not contain <%s>\n", urlp, DATE)
 		return false, -1
@@ -86,8 +83,6 @@ func (h *Hmac) ValidateTime(urlp string, secret string) (bool, int) {
 		ts, _ := strconv.Atoi(t.Format(time.RFC850))
 		return true, ts
 	} else {
-		fmt.Printf("SH:<%s>\n", urlp)
-		fmt.Printf("IS:<%s>\n", newu)
 		return false, -6
 	}
 }
@@ -136,16 +131,12 @@ func (h *Hmac) canonicalRepresentation(parms map[string]string, query map[string
 				rep += "&"
 				get += "&"
 			}
-			//fmt.Println("KEY: "+key)
 			rep += key
 			rep += "="
-			//rep += query[key][0]
 			t, _ := url.QueryUnescape(query[key][0])
 			rep += t
-			//rep += url.QueryEscape(query[key][0])
 			get += key
 			get += "="
-			//get += query[key][0]
 			get += url.QueryEscape(query[key][0])
 		}
 	}

@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"os/exec"
 	"strconv"
-	"strings"
 	"testing"
 	"time"
 )
@@ -27,15 +26,12 @@ func Test_HMAC_ruby(t *testing.T) {
 		So(HMAC.Validate(string(out), pass), ShouldEqual, true)
 	})
 	MyConvey("URL 0_ OK", t, func() {
-		urlo, _ := url.Parse("http://eklenet.de/?abbes=abc&" + DATE + "123" + SIG + "abc&def=xyz")
-		url := urlo.String()
+		url := "/?abbes=abc&" + DATE + "123" + SIG + "abc&def=xyz"
 		pass := "geheim"
 		cur := time.Now().Unix()
 		ttl := 30000
 		endoflife := int(cur) + ttl
 		surl := HMAC.SignUrl(url, pass, endoflife)
-		surl = strings.Replace(surl, "[", "%5B", 2)
-		surl = strings.Replace(surl, "]", "%5D", 2)
 		So(HMAC.Validate(surl, pass), ShouldEqual, true)
 	})
 	MyConvey("URL 0a OK", t, func() {
