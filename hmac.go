@@ -31,6 +31,7 @@ func (h *Hmac) signRequest(urlp string, secret string, t time.Time) string {
 	//parms["nonce"] = ""
 	parms["path"] = u.Path
 	r, get := h.canonicalRepresentation(parms, q)
+	//fmt.Printf("<%s>\n",r)
 	mac := hmac.New(sha1.New, []byte(secret))
 	mac.Write([]byte(r))
 	expectedMAC := mac.Sum(nil)
@@ -43,7 +44,8 @@ func (h *Hmac) signRequest(urlp string, secret string, t time.Time) string {
 	if len(u.Fragment) > 0 {
 		f = "#" + u.Fragment
 	}
-	return fmt.Sprintf("%s://%s%s?%s%s%s%x%s%s%s", u.Scheme, u.Host, u.Path, DATE, date, SIG, expectedMAC, x, get, f)
+	m := "" //fmt.Sprintf("REP: <%s>\n",r)
+	return m + fmt.Sprintf("%s://%s%s?%s%s%s%x%s%s%s", u.Scheme, u.Host, u.Path, DATE, date, SIG, expectedMAC, x, get, f)
 }
 
 func (h *Hmac) Validate(urlp string, secret string) bool {
@@ -125,12 +127,17 @@ func (h *Hmac) canonicalRepresentation(parms map[string]string, query map[string
 				rep += "&"
 				get += "&"
 			}
+			//fmt.Println("KEY: "+key)
 			rep += key
 			rep += "="
-			rep += query[key][0]
+			//rep += query[key][0]
+			t, _ := url.QueryUnescape(query[key][0])
+			rep += t
+			//rep += url.QueryEscape(query[key][0])
 			get += key
 			get += "="
-			get += query[key][0]
+			//get += query[key][0]
+			get += url.QueryEscape(query[key][0])
 		}
 	}
 	return rep, get

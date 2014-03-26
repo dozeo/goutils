@@ -179,7 +179,7 @@ module HMAC
         end.join("&")
         rep << "?#{query}"
       end
-
+#	puts "REP: <"+rep+">"
       rep
     end
 
