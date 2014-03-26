@@ -45,12 +45,12 @@ func Test_HMAC_ruby(t *testing.T) {
 		cur := time.Now().Unix()
 		var cur32 = int32(cur)
 		So(int64(cur32), ShouldEqual, cur)
-		ttl := -30000
+		ttl := 30000
 		endoflife := int(cur) + ttl
 		out, err := exec.Command("ruby", "hmac_test/ref.rb", url, pass, strconv.Itoa(endoflife)).Output()
 		So(nil, ShouldEqual, err)
 		So(HMAC.SignUrl(url, pass, endoflife), ShouldEqual, string(out))
-		So(HMAC.Validate(string(out), pass), ShouldEqual, false)
+		So(HMAC.Validate(string(out), pass), ShouldEqual, true)
 		test_tmp = string(out)
 	})
 	MyConvey("URL Double 2", t, func() {
@@ -59,12 +59,12 @@ func Test_HMAC_ruby(t *testing.T) {
 		cur := time.Now().Unix()
 		var cur32 = int32(cur)
 		So(int64(cur32), ShouldEqual, cur)
-		ttl := -30000
+		ttl := 30000
 		endoflife := int(cur) + ttl
 		out, err := exec.Command("ruby", "hmac_test/ref.rb", url, pass, strconv.Itoa(endoflife)).Output()
 		So(nil, ShouldEqual, err)
 		So(HMAC.SignUrl(url, pass, endoflife), ShouldEqual, string(out))
-		So(HMAC.Validate(string(out), pass), ShouldEqual, false)
+		So(HMAC.Validate(string(out), pass), ShouldEqual, true)
 	})
 	MyConvey("URL Double 3", t, func() {
 		url := "http://dev.doz.io:4080/info.json?url=" + url.QueryEscape(test_tmp) + "&page=1&size=50"
@@ -72,12 +72,12 @@ func Test_HMAC_ruby(t *testing.T) {
 		cur := time.Now().Unix()
 		var cur32 = int32(cur)
 		So(int64(cur32), ShouldEqual, cur)
-		ttl := -30000
+		ttl := 30000
 		endoflife := int(cur) + ttl
 		out, err := exec.Command("ruby", "hmac_test/ref.rb", url, pass, strconv.Itoa(endoflife)).Output()
 		So(nil, ShouldEqual, err)
 		So(HMAC.SignUrl(url, pass, endoflife), ShouldEqual, string(out))
-		So(HMAC.Validate(string(out), pass), ShouldEqual, false)
+		So(HMAC.Validate(string(out), pass), ShouldEqual, true)
 	})
 	MyConvey("URL 1 OUTDATED", t, func() {
 		url := "http://www.eklenet.de"

@@ -49,37 +49,38 @@ func (h *Hmac) signRequest(urlp string, secret string, t time.Time) string {
 }
 
 func (h *Hmac) Validate(urlp string, secret string) bool {
-	t, _ := h.ValidateTime(urlp, secret)
+	t, s := h.ValidateTime(urlp, secret)
+	fmt.Printf("Validate: " + strconv.Itoa(s))
 	return t
 }
 
 func (h *Hmac) ValidateTime(urlp string, secret string) (bool, int) {
 	p := strings.LastIndex(urlp, DATE)
 	if p < 0 {
-		return false, 0
+		return false, -1
 	}
 	s := strings.LastIndex(urlp, SIG)
 	if s < 0 {
-		return false, 0
+		return false, -2
 	}
 	times := urlp[p+len(DATE) : s]
 	tt, err := url.QueryUnescape(times)
 	if err != nil {
-		return false, 0
+		return false, -3
 	}
 	t, terr := time.Parse(FORMAT, tt)
 	if terr != nil {
-		return false, 0
+		return false, -4
 	}
 	if t.Unix() < time.Now().UTC().Unix() {
-		return false, 0
+		return false, -5
 	}
 	newu := h.signRequest(urlp, secret, t)
 	if urlp == newu {
 		ts, _ := strconv.Atoi(t.Format(time.RFC850))
 		return true, ts
 	} else {
-		return false, 0
+		return false, -6
 	}
 }
 
