@@ -31,7 +31,7 @@ func (h *Hmac) signRequest(urlp string, secret string, t time.Time) string {
 	//parms["nonce"] = ""
 	parms["path"] = u.Path
 	r, get := h.canonicalRepresentation(parms, q)
-	fmt.Printf("<%s>\n",r)
+	fmt.Printf("<%s>\n", r)
 	mac := hmac.New(sha1.New, []byte(secret))
 	mac.Write([]byte(r))
 	expectedMAC := mac.Sum(nil)
@@ -56,6 +56,11 @@ func (h *Hmac) Validate(urlp string, secret string) bool {
 
 func (h *Hmac) ValidateTime(urlp string, secret string) (bool, int) {
 	p := strings.LastIndex(urlp, DATE)
+	if p < 0 {
+		urlp = strings.Replace(urlp, "%5B", "[", -1)
+		urlp = strings.Replace(urlp, "%5D", "]", -1)
+		p = strings.LastIndex(urlp, DATE)
+	}
 	if p < 0 {
 		fmt.Printf("<%s> does not contain <%s>\n", urlp, DATE)
 		return false, -1
