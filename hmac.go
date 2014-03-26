@@ -31,7 +31,7 @@ func (h *Hmac) signRequest(urlp string, secret string, t time.Time) string {
 	//parms["nonce"] = ""
 	parms["path"] = u.Path
 	r, get := h.canonicalRepresentation(parms, q)
-	//fmt.Printf("<%s>\n",r)
+	fmt.Printf("<%s>\n",r)
 	mac := hmac.New(sha1.New, []byte(secret))
 	mac.Write([]byte(r))
 	expectedMAC := mac.Sum(nil)
