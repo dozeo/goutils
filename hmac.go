@@ -14,7 +14,7 @@ import (
 const (
 	DATE   = "auth[date]="
 	SIG    = "&auth[signature]="
-	FORMAT = "Mon, 02 Jan 2006 15:04:05 GMT"
+	FORMAT = "Mon, _2 Jan 2006 15:04:05 GMT"
 )
 
 var HMAC Hmac
