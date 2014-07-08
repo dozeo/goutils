@@ -1,8 +1,9 @@
 package goutils
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func Test_execute0(t *testing.T) {

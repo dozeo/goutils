@@ -1,12 +1,13 @@
 package goutils
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"net/url"
 	"os/exec"
 	"strconv"
 	"testing"
 	"time"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 var test_tmp string

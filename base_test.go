@@ -2,6 +2,7 @@ package goutils
 
 import (
 	"fmt"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 

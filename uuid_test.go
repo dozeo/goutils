@@ -1,9 +1,10 @@
 package goutils
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"strings"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func Test_UUID(t *testing.T) {

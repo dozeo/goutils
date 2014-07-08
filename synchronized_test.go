@@ -1,10 +1,11 @@
 package goutils
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"runtime"
 	"testing"
 	"time"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func a(v int) {

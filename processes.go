@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/ErikDubbelboer/gspt"
 	"os"
 	"os/exec"
 	"time"
+
+	"github.com/ErikDubbelboer/gspt"
 )
 
 var Process Processes
