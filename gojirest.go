@@ -15,9 +15,9 @@ func WriterError(w http.ResponseWriter, e error) {
 	w.Write([]byte(e.Error()))
 }
 
-var ErrorRestFunc = errors.New("Rest function must be func(struct, web.C) (struct, error)")
-var ErrorRequestBody = errors.New("Could not read request body")
-var ErrorRequestJsonUnmarshal = errors.New("Could not generate struct vom json")
+var ErrorRestFunc = errors.New("{\"error\":\"Rest function must be func(struct, web.C) (struct, error)\"}")
+var ErrorRequestBody = errors.New("{\"error\":\"Could not read request body\"}")
+var ErrorRequestJsonUnmarshal = errors.New("{\"error\":\"Could not generate struct vom json\"}")
 
 func GojiRestJsonWrapper(f interface{}) func(c web.C, w http.ResponseWriter, r *http.Request) {
 	return func(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -86,7 +86,7 @@ func myrestfunc(d data, c web.C) (ret, error) {
 }
 
 func main() {
-	goji.Post("/hello3/:name", RestJsonWrapper(myrestfunc))
+	goji.Post("/hello3/:name", GojiRestJsonWrapper(myrestfunc))
 	goji.Serve()
 }
 */
