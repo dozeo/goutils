@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/ErikDubbelboer/gspt"
@@ -59,5 +60,12 @@ func (c *Processes) SetProcTitle(title string) {
 }
 
 func (c *Processes) AppendProcTitleAppend(title string) {
-	gspt.SetProcTitle(fmt.Sprintf("%s%s", os.Args[0], title))
+	gspt.SetProcTitle(fmt.Sprintf("%s%s", strings.Join(os.Args, " "), title))
+}
+
+func init() {
+	go func() {
+		time.Sleep(10 * time.Millisecond)
+		Process.AppendProcTitleAppend("")
+	}()
 }
