@@ -13,7 +13,6 @@ import (
 )
 
 var Process Processes
-var Command Processes // deprecated
 
 type Processes struct {
 }
@@ -46,12 +45,7 @@ func (c *Processes) Execute(timeout int, stdin []byte, parms ...string) ([]byte,
 		}
 		return bout.Bytes(), berr.Bytes(), errors.New(ErrorTimeout)
 	case status := <-done:
-		out := berr.Bytes()
-		if status != nil {
-			return bout.Bytes(), out, status
-		} else {
-			return bout.Bytes(), out, nil
-		}
+		return bout.Bytes(), berr.Bytes(), status
 	}
 }
 
@@ -59,13 +53,13 @@ func (c *Processes) SetProcTitle(title string) {
 	gspt.SetProcTitle(title)
 }
 
-func (c *Processes) AppendProcTitleAppend(title string) {
+func (c *Processes) AppendProcTitle(title string) {
 	gspt.SetProcTitle(fmt.Sprintf("%s%s", strings.Join(os.Args, " "), title))
 }
 
 func init() {
 	go func() {
 		time.Sleep(10 * time.Millisecond)
-		Process.AppendProcTitleAppend("")
+		Process.AppendProcTitle("")
 	}()
 }
