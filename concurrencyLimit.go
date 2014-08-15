@@ -7,11 +7,13 @@ import (
 
 type concurrencyLimit struct {
 	lock chan (bool)
+	size int
 }
 
 func NewConcurrencyLimit(limit int) concurrencyLimit {
 	ob := concurrencyLimit{}
 	ob.lock = make(chan bool, limit)
+	ob.size = limit
 	return ob
 }
 
@@ -35,6 +37,14 @@ func (l *concurrencyLimit) Use() {
 
 func (l *concurrencyLimit) Free() {
 	<-l.lock
+}
+
+func (l *concurrencyLimit) Len() int {
+	return len(l.lock)
+}
+
+func (l *concurrencyLimit) Size() int {
+	return l.size
 }
 
 // usage: defer x.Limit()()
