@@ -3,13 +3,8 @@ package goutils
 import (
 	"bytes"
 	"errors"
-	"fmt"
-	"os"
 	"os/exec"
-	"strings"
 	"time"
-
-	"github.com/ErikDubbelboer/gspt"
 )
 
 var Process Processes
@@ -47,19 +42,4 @@ func (c *Processes) Execute(timeout int, stdin []byte, parms ...string) ([]byte,
 	case status := <-done:
 		return bout.Bytes(), berr.Bytes(), status
 	}
-}
-
-func (c *Processes) SetProcTitle(title string) {
-	gspt.SetProcTitle(title)
-}
-
-func (c *Processes) AppendProcTitle(title string) {
-	gspt.SetProcTitle(fmt.Sprintf("%s%s", strings.Join(os.Args, " "), title))
-}
-
-func init() {
-	go func() {
-		time.Sleep(10 * time.Millisecond)
-		Process.AppendProcTitle("")
-	}()
 }
