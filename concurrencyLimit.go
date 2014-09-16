@@ -5,51 +5,51 @@ import (
 	"runtime"
 )
 
-type concurrencyLimit struct {
+type ConcurrencyLimit struct {
 	lock chan (bool)
 	size int
 }
 
-func NewConcurrencyLimit(limit int) concurrencyLimit {
-	ob := concurrencyLimit{}
+func NewConcurrencyLimit(limit int) ConcurrencyLimit {
+	ob := ConcurrencyLimit{}
 	ob.lock = make(chan bool, limit)
 	ob.size = limit
 	return ob
 }
 
-func NewConcurrencyLimitCPU() concurrencyLimit {
+func NewConcurrencyLimitCPU() ConcurrencyLimit {
 	return NewConcurrencyLimit(runtime.NumCPU())
 }
 
-func NewConcurrencyLimitCPUFactore(f float64) concurrencyLimit {
+func NewConcurrencyLimitCPUFactore(f float64) ConcurrencyLimit {
 	t := float64(runtime.NumCPU()) * f
 	t2 := math.Ceil(t)
 	return NewConcurrencyLimit(int(t2))
 }
 
-func NewConcurrencyLimitOne() concurrencyLimit {
+func NewConcurrencyLimitOne() ConcurrencyLimit {
 	return NewConcurrencyLimit(1)
 }
 
-func (l *concurrencyLimit) Use() {
+func (l *ConcurrencyLimit) Use() {
 	l.lock <- true
 }
 
-func (l *concurrencyLimit) Free() {
+func (l *ConcurrencyLimit) Free() {
 	<-l.lock
 }
 
-func (l *concurrencyLimit) Len() int {
+func (l *ConcurrencyLimit) Len() int {
 	return len(l.lock)
 }
 
-func (l *concurrencyLimit) Size() int {
+func (l *ConcurrencyLimit) Size() int {
 	return l.size
 }
 
 // usage: defer x.Limit()()
 //                     ^ ^ double ()
-func (l *concurrencyLimit) Limit() func() {
+func (l *ConcurrencyLimit) Limit() func() {
 	l.Use()
 	return func() {
 		l.Free()
